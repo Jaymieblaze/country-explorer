@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SkeletonCard from "../components/SkeletonCard";
+import CustomDropdown from "../components/CustomDropdown";
 
 function Home() {
   const [countries, setCountries] = useState([]);
@@ -93,18 +94,19 @@ function Home() {
         </div>
         
 
-        <select
-          className="p-4 w-48 rounded-md shadow-sm border-none bg-white dark:bg-gray-800 dark:text-white cursor-pointer"
+        <CustomDropdown
           value={selectedRegion}
-          onChange={(e) => setSelectedRegion(e.target.value)}
-        >
-          <option value="">Filter by Region</option>
-          <option value="Africa">Africa</option>
-          <option value="Americas">Americas</option>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Oceania">Oceania</option>
-        </select>
+          onChange={setSelectedRegion}
+          placeholder="Filter by Region"
+          options={[
+            { value: '', label: 'Filter by Region' },
+            { value: 'Africa', label: 'Africa' },
+            { value: 'Americas', label: 'Americas' },
+            { value: 'Asia', label: 'Asia' },
+            { value: 'Europe', label: 'Europe' },
+            { value: 'Oceania', label: 'Oceania' },
+          ]}
+        />
       </div>
 
       {/* Grid Container */}
