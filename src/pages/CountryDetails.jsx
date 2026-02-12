@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import SkeletonDetails from '../components/SkeletonDetails'; // <--- NEW IMPORT
 
 function CountryDetails() {
   const { id } = useParams();
@@ -10,6 +11,7 @@ function CountryDetails() {
   useEffect(() => {
     const fetchCountryData = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`https://restcountries.com/v3.1/alpha/${id}`);
         
         if (!response.ok) {
@@ -17,7 +19,7 @@ function CountryDetails() {
         }
 
         const data = await response.json();
-        setCountry(data[0]); // The API returns an array with one item
+        setCountry(data[0]); 
         setIsLoading(false);
       } catch (err) {
         setError(err.message);
@@ -28,14 +30,23 @@ function CountryDetails() {
     fetchCountryData();
   }, [id]);
 
-  if (isLoading) return <div className="text-center mt-20 text-xl">Loading details...</div>;
   if (error) return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
+
+  // NEW: Show Skeleton if loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
+        <SkeletonDetails />
+      </div>
+    );
+  }
+
   if (!country) return null;
 
   return (
-    <div className="p-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 text-gray-800 dark:text-white transition-colors duration-300">
       {/* Back Button */}
-      <Link to="/" className="inline-block bg-white dark:bg-gray-800 px-8 py-2 shadow-md rounded-md mb-12 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white transition-colors">
+      <Link to="/" className="inline-block bg-white dark:bg-gray-800 px-8 py-2 shadow-md rounded-md mb-12 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
         &larr; Back
       </Link>
 
@@ -53,7 +64,7 @@ function CountryDetails() {
           <h1 className="text-3xl font-bold mb-8">{country.name.common}</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm">
               <p><span className="font-semibold">Native Name:</span> {Object.values(country.name.nativeName || {})[0]?.common || 'N/A'}</p>
               <p><span className="font-semibold">Population:</span> {country.population.toLocaleString()}</p>
               <p><span className="font-semibold">Region:</span> {country.region}</p>
@@ -61,7 +72,7 @@ function CountryDetails() {
               <p><span className="font-semibold">Capital:</span> {country.capital?.[0]}</p>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm">
               <p><span className="font-semibold">Top Level Domain:</span> {country.tld?.[0]}</p>
               <p><span className="font-semibold">Currencies:</span> {Object.values(country.currencies || {}).map(c => c.name).join(', ')}</p>
               <p><span className="font-semibold">Languages:</span> {Object.values(country.languages || {}).join(', ')}</p>
@@ -77,7 +88,7 @@ function CountryDetails() {
                   <Link 
                     key={borderCode}
                     to={`/country/${borderCode}`}
-                    className="bg-white dark:bg-gray-800 px-4 py-1 shadow-sm rounded text-sm hover:shadow-md dark:hover:bg-gray-700 transition-shadow"
+                    className="bg-white dark:bg-gray-800 px-4 py-1 shadow-sm rounded text-sm hover:shadow-md transition-shadow"
                   >
                     {borderCode}
                   </Link>
