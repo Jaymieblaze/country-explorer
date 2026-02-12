@@ -34,37 +34,41 @@ function Home() {
   if (error) return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-800">Where in the world?</h1>
-        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-          <input 
+    <div className="pb-8">
+      {/* Search & Filter Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+        <div className="relative w-full md:w-1/3">
+           {/* Search Icon */}
+           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+           </div>
+           <input 
             type="text" 
             placeholder="Search for a country..." 
-            className="p-3 w-full sm:w-80 rounded-md shadow-sm border border-gray-300"
+            className="pl-10 p-4 w-full rounded-md shadow-sm border-none bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <select 
-            className="p-3 rounded-md shadow-sm border border-gray-300 bg-white"
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-          >
-            <option value="">Filter by Region</option>
-            <option value="Africa">Africa</option>
-            <option value="Americas">Americas</option>
-            <option value="Asia">Asia</option>
-            <option value="Europe">Europe</option>
-            <option value="Oceania">Oceania</option>
-          </select>
         </div>
+        
+        <select 
+          className="p-4 w-48 rounded-md shadow-sm border-none bg-white dark:bg-gray-800 dark:text-white cursor-pointer"
+          value={selectedRegion}
+          onChange={(e) => setSelectedRegion(e.target.value)}
+        >
+          <option value="">Filter by Region</option>
+          <option value="Africa">Africa</option>
+          <option value="Americas">Americas</option>
+          <option value="Asia">Asia</option>
+          <option value="Europe">Europe</option>
+          <option value="Oceania">Oceania</option>
+        </select>
       </div>
 
       {/* Grid Container */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {filteredCountries.map((country) => (
-          /* NEW: Wrapping the card in a Link component */
+          /* Wrapping the card in a Link component */
           <Link to={`/country/${country.cca3}`} key={country.cca3}>
             <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
               <img 

@@ -33,9 +33,9 @@ function CountryDetails() {
   if (!country) return null;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="p-8">
       {/* Back Button */}
-      <Link to="/" className="inline-block bg-white px-8 py-2 shadow-md rounded-md mb-12 hover:bg-gray-50 text-gray-800 transition-colors">
+      <Link to="/" className="inline-block bg-white dark:bg-gray-800 px-8 py-2 shadow-md rounded-md mb-12 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-white transition-colors">
         &larr; Back
       </Link>
 
@@ -77,7 +77,7 @@ function CountryDetails() {
                   <Link 
                     key={borderCode}
                     to={`/country/${borderCode}`}
-                    className="bg-white px-4 py-1 shadow-sm rounded text-sm hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-gray-800 px-4 py-1 shadow-sm rounded text-sm hover:shadow-md dark:hover:bg-gray-700 transition-shadow"
                   >
                     {borderCode}
                   </Link>
