@@ -1,59 +1,88 @@
 import { useState, useEffect } from 'react';
 
 function App() {
-  // 1. State Management
   const [countries, setCountries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // State for Search and Filter
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('');
 
-  // 2. The Fetch Logic
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // We only fetch the fields we need (performance boost!)
-        const response = await fetch(
-          'https://restcountries.com/v3.1/all?fields=name,flags,population,region,capital,cca3'
-        );
-
-        if (!response.ok) {
-          throw new Error('Something went wrong fetching data');
-        }
-
+        const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,population,region,capital,cca3');
+        if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         setCountries(data);
-        setIsLoading(false);
       } catch (err) {
         setError(err.message);
+      } finally {
         setIsLoading(false);
       }
     };
-
     fetchData();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
-  // 3. Conditional Rendering
-  if (isLoading) return <div className="text-center mt-20 text-xl">Loading countries...</div>;
+  //The Filtering Logic (Runs on every render)
+  const filteredCountries = countries.filter((country) => {
+    // 1. Check if country matches search term (case insensitive)
+    const matchesSearch = country.name.common.toLowerCase().includes(searchTerm.toLowerCase());
+    // 2. Check if country matches region (if one is selected)
+    const matchesRegion = selectedRegion === '' || country.region === selectedRegion;
+    
+    return matchesSearch && matchesRegion;
+  });
+
+  if (isLoading) return <div className="text-center mt-20 text-xl">Loading...</div>;
   if (error) return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
 
-  // 4. The UI (Grid Layout)
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Where in the world?</h1>
-      
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 className="text-3xl font-bold text-gray-800">Where in the world?</h1>
+        
+        {/* Search & Filter Controls */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+          <input 
+            type="text" 
+            placeholder="Search for a country..." 
+            className="p-3 w-full sm:w-80 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          
+          <select 
+            className="p-3 rounded-md shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            value={selectedRegion}
+            onChange={(e) => setSelectedRegion(e.target.value)}
+          >
+            <option value="">Filter by Region</option>
+            <option value="Africa">Africa</option>
+            <option value="Americas">Americas</option>
+            <option value="Asia">Asia</option>
+            <option value="Europe">Europe</option>
+            <option value="Oceania">Oceania</option>
+          </select>
+        </div>
+      </div>
+
       {/* Grid Container */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {countries.map((country) => (
+        {filteredCountries.map((country) => (
           <div key={country.cca3} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
             <img 
               src={country.flags.png} 
-              alt={country.name.common} 
+              alt={`Flag of ${country.name.common}`} 
               className="w-full h-40 object-cover"
             />
             <div className="p-6">
               <h2 className="font-bold text-lg mb-4">{country.name.common}</h2>
-              <p className="text-sm"><span className="font-semibold">Population:</span> {country.population.toLocaleString()}</p>
-              <p className="text-sm"><span className="font-semibold">Region:</span> {country.region}</p>
-              <p className="text-sm"><span className="font-semibold">Capital:</span> {country.capital?.[0]}</p>
+              <p className="text-sm text-gray-600 mb-1"><span className="font-semibold text-gray-800">Population:</span> {country.population.toLocaleString()}</p>
+              <p className="text-sm text-gray-600 mb-1"><span className="font-semibold text-gray-800">Region:</span> {country.region}</p>
+              <p className="text-sm text-gray-600"><span className="font-semibold text-gray-800">Capital:</span> {country.capital?.[0] || 'N/A'}</p>
             </div>
           </div>
         ))}
